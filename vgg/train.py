@@ -20,7 +20,8 @@ def main():
     momentum = None          # Necessary if optimizer is 'momentum'
     batch_size = 32
     epochs = 500
-    epochs_evey_test = 100
+    epochs_every_test = 100
+    epochs_every_save = 100
     method = 'restart'       # A string from: 'restart', 'restore'
 
     #  Log file setting
@@ -107,7 +108,7 @@ def main():
                 print("%s: epoch %d, train_accuracy = %f, train_loss = %f."
                               % (utils.print_time(), i, train_accuracy, train_loss), file=fo)
             # test
-            if (i + 1) % epochs_evey_test == 0:
+            if (i + 1) % epochs_every_test == 0:
                 sess.run(test_init_op)
                 total_correct_count = 0
                 test_loss_ = 0.0
@@ -121,6 +122,8 @@ def main():
                     test_accuracy = total_correct_count / num_test_sample
                     test_loss = test_loss_ / m
                     print("%s: epoch %d, test_accuracy = %f, test_loss = %f" % (utils.print_time(), i, test_accuracy, test_loss), file=fo)
+            if (i + 1) % epochs_every_save == 0:
+                saver.save(sess, model_path, global_step=step)
         print("Done training -- epoch limited reached")
         # test
         sess.run(test_init_op)
