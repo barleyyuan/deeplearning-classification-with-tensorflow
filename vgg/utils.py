@@ -52,7 +52,7 @@ def get_filename_label(main_path, file_list):
     return tf.constant(filenames), tf.constant(labels)
 
 
-def _parse_function(filename, label, num_class):
+def _parse_function(filename, label, num_classes):
     '''
     Read an image from a file, decode it into a dense tensor, and preprocess it.
     :param filename: A tf.constant of filename
