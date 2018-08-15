@@ -1,6 +1,6 @@
 import tensorflow as tf
 import resnet
-import utils
+import resnet.utils as utils
 import os
 import math
 
@@ -22,6 +22,7 @@ def main():
     epochs = 500
     epochs_every_test = 100
     epochs_every_save = 100
+    early_stop_num = 3
     method = 'restart'       # A string from: 'restart', 'restore'
 
     #  Log file setting
@@ -84,6 +85,8 @@ def main():
         print('%d training images and %d test images' % (num_train_sample, num_test_sample), file=fo)
         step = 0
         m = math.ceil(num_train_sample / batch_size)
+        train_accuracies = []
+        train_losses = []
         for i in range(epochs):
             sess.run(train_init_op)
             train_acc_ = 0.0
@@ -106,6 +109,13 @@ def main():
                 train_loss = train_loss_ / m
                 print("%s: epoch %d, train_accuracy = %f, train_loss = %f."
                               % (utils.print_time(), i, train_accuracy, train_loss), file=fo)
+            # ealry stop
+            train_accuracies.append(train_accuracy)
+            train_losses.append(train_loss)
+            if utils.early_stop(train_accuracies, train_losses, n=early_stop_num):
+                break
+            else:
+                pass
             # test
             if (i + 1) % epochs_every_test == 0:
                 sess.run(test_init_op)

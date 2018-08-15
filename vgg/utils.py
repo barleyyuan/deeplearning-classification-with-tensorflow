@@ -64,7 +64,7 @@ def _parse_function(filename, label, num_classes):
     image_decoded = tf.image.decode_jpeg(image_string, channels=3)
     image_data = tf.image.resize_images(image_decoded, [224, 224])
     image_data = tf.image.per_image_standardization(image_data)
-    label = tf.one_hot(label, num_class)
+    label = tf.one_hot(label, num_classes)
     return image_data, label
 
 
@@ -124,3 +124,15 @@ def create_directory(directory):
         pass
 
 
+def early_stop(train_accuracy, train_loss, val_accuracies=None, val_losses=None, n=3):
+    if (train_accuracy == 1.0) and (train_loss == 0.0):
+        return True
+    else:
+        if (val_accuracies is not None) \
+                and (len(val_accuracies) >= 3) \
+                and(val_accuracies[-n:] == sorted(val_accuracies[-n:], reverse=True)) \
+                and (val_losses[-n:] == sorted(val_losses[-n:])):
+            assert len(val_accuracies) == len(val_losses)
+            return True
+        else:
+            return False

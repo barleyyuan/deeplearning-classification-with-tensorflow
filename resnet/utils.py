@@ -122,3 +122,19 @@ def create_directory(directory):
         os.makedirs(directory)
     else:
         pass
+
+
+def early_stop(train_accuracies, train_losses, val_accuracies=None, val_losses=None, n=3):
+    if (len(train_accuracies) >= 3) \
+            and (train_accuracies[-n:] == [1.0]*n) \
+            and (train_losses[-n:] == [0.0]*n):
+        return True
+    else:
+        if (val_accuracies is not None) \
+                and (len(val_accuracies) >= 3) \
+                and(val_accuracies[-n:] == sorted(val_accuracies[-n:], reverse=True)) \
+                and (val_losses[-n:] == sorted(val_losses[-n:])):
+            assert len(val_accuracies) == len(val_losses)
+            return True
+        else:
+            return False
