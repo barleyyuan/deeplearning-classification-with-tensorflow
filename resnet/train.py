@@ -1,6 +1,6 @@
 import tensorflow as tf
 import resnet
-import resnet.utils as utils
+import utils
 import os
 import math
 
