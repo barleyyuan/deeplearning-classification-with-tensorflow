@@ -2,6 +2,9 @@
 基于TensorFlow的经典分类网络的实现——vgg16，resnet系列
 
 ## 使用手册——以resnet为例
+### 环境
+Ubuntu16.04 + tensorflow1.10.0
+
 ### 数据集格式   
 dataset-|-class0-|-00001.jpg  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|-00002.jpg   
