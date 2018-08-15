@@ -100,6 +100,7 @@ class Resnet(object):
                                      filters=n_first,
                                      kernel_size=3,
                                      strides=1,
+                                     padding='same',
                                      name='conv2',
                                      )
                 f = tf.layers.conv2d(inputs=f,
@@ -114,7 +115,7 @@ class Resnet(object):
                 shortcut = tf.layers.conv2d(inputs=x,
                                             filters=n_out,
                                             kernel_size=1,
-                                            strides=2,
+                                            strides=strides,
                                             name='projection')
             else:
                 shortcut = x  # identical mapping
