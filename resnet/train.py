@@ -12,7 +12,7 @@ def main():
 
     # Hyper-parameters
     # Net structure
-    depth = 18
+    depth = 18               # An int from: 18, 34, 50, 101, 152
     num_classes = 2
     # Training parameters
     optimizer = 'sgd'        # A string from: 'agd', 'adam', 'momentum'
