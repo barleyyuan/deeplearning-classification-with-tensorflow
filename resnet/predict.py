@@ -22,6 +22,7 @@ def predict_img(sess, classes):
             pred_prob = pred[0, pred_class_index]
             pred_class = classes[pred_class_index]
             utils.show_result_pic(image, pred_class, pred_prob)
+            print(pred_class, pred_prob)
 
 
 def main():
