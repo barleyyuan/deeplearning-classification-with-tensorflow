@@ -37,7 +37,7 @@ summarize: 是否利用tensorboard记录训练结果的布尔值，可选值：T
 #### 运行
 python resnet/train.py
 
-### 训练
+### 预测
 #### 修改resnet/predict.py中的参数
 model_path: ckpt模型所在路径
 #### 运行
