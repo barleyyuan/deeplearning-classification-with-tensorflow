@@ -12,25 +12,37 @@ import numpy as np
 import tensorflow as tf
 
 
-def train_test_split(data_path, seed=15, test_ratio=0.1):
+def data_split(data_path, test_ratio=0.1, validation=False, val_ratio=0.1, seed=15):
     """
     Split data to training set and test set
     :param data_path: A path
     :param seed: A random seed
     :param test_ratio: A float value in [0.0, 1.0]
-    :return: A list with filenames in training set, a list with filenames in test set
+    :param validation: True if setting validation set
+    :param val_ratio: A float value in [0.0, 1.0]
+    :return: Three list with filenames in training, test, validation set
     """
     random.seed(seed)
     train = []
     test = []
+    val = []
     for classname in os.listdir(data_path):
         img_name_list = os.listdir(os.path.join(data_path, classname))
         random.shuffle(img_name_list)
-        train_list = img_name_list[:int(len(img_name_list)*(1-test_ratio))]
-        test_list = img_name_list[int(len(img_name_list)*(1-test_ratio)):]
+        total_num = len(img_name_list)
+        test_num = int(total_num * test_ratio)
+        test_list = img_name_list[:test_num]
+        if validation:
+            val_num = int(total_num * val_ratio)
+            val_list = img_name_list[test_num:test_num+val_num]
+            val.append(val_list)
+            train_list = img_name_list[val_num+test_num:]
+
+        else:
+            train_list = img_name_list[test_num:]
         train.append(train_list)
         test.append(test_list)
-    return train, test
+    return train, val, test
 
 
 def cal_num(dataset):

@@ -9,6 +9,8 @@ def main():
     # Training and test data
     data_path = '/path/to/your/data'
     test_ratio = 0.1
+    validation = True
+    val_ratio = 0.1
 
     # Hyper-parameters
     # Net structure
@@ -37,7 +39,7 @@ def main():
     summarize = True         # True if summarize in tensorboard
 
     # Load data and preprocess it
-    train_list, test_list = utils.train_test_split(data_path, test_ratio)
+    train_list, test_list, val_list = utils.data_split(data_path, test_ratio, validation, val_ratio)
     num_train_sample = utils.cal_num(train_list)
     num_test_sample = utils.cal_num(test_list)
     train_filenames, train_labels = utils.get_filename_label(data_path, train_list)
@@ -51,13 +53,22 @@ def main():
     example_batch, label_batch = iterator.get_next()
     train_init_op = iterator.make_initializer(train_dataset)
     test_init_op = iterator.make_initializer(test_dataset)
+    # validation
+    if validation:
+        num_val_sample = utils.cal_num(val_list)
+        val_filenames, val_labels = utils.get_filename_label(data_path, val_list)
+        val_dataset = tf.data.Dataset.from_tensor_slices((val_filenames, val_labels)).map(
+            lambda x, y: utils._parse_function(x, y, num_classes)).batch(batch_size).repeat(1)
+        val_init_op = iterator.make_initializer(val_dataset)
+    else:
+        pass
 
     # Define input x and output y
     x = tf.placeholder('float', shape=[None, 224, 224, 3], name='x')
     y_ = tf.placeholder('float', shape=[None, num_classes], name='y')
-    resnet = resnet.Resnet(depth, num_classes)
-    resnet.model(x)
-    train_op, correct_count, loss, accuracy = utils.train(resnet.logits, resnet.prob, y_, optimizer, learning_rate, momentum)
+    net = resnet.Resnet(depth, num_classes)
+    net.model(x)
+    train_op, correct_count, loss, accuracy = utils.train(net.logits, net.prob, y_, optimizer, learning_rate, momentum)
 
     # Summarize in tensorboard
     if summarize:
@@ -87,6 +98,8 @@ def main():
         m = math.ceil(num_train_sample / batch_size)
         train_accuracies = []
         train_losses = []
+        val_accuracies = []
+        val_losses = []
         for i in range(epochs):
             sess.run(train_init_op)
             train_acc_ = 0.0
@@ -109,13 +122,36 @@ def main():
                 train_loss = train_loss_ / m
                 print("%s: epoch %d, train_accuracy = %f, train_loss = %f."
                               % (utils.print_time(), i, train_accuracy, train_loss), file=fo)
-            # ealry stop
             train_accuracies.append(train_accuracy)
             train_losses.append(train_loss)
-            if utils.early_stop(train_accuracies, train_losses, n=early_stop_num):
-                break
+            # validation
+            if validation:
+                sess.run(val_init_op)
+                total_correct_count = 0
+                val_loss_ = 0.0
+                try:
+                    while True:
+                        X_val, Y_val = sess.run([example_batch, label_batch])
+                        true_count, current_loss = sess.run([correct_count, loss], feed_dict={x: X_val, y_: Y_val})
+                        total_correct_count += true_count
+                        val_loss_ += current_loss
+                except tf.errors.OutOfRangeError:
+                    val_accuracy = total_correct_count / num_val_sample
+                    val_loss = val_loss_ / m
+                    print("%s:          val_accuracy = %f, val_loss = %f" % (utils.print_time(), val_accuracy, val_loss), file=fo)
+                val_accuracies.append(val_accuracy)
+                val_losses.append(val_loss)
+                # early stop
+                if utils.early_stop(train_accuracies, train_losses, val_accuracies, val_losses, n=early_stop_num):
+                    break
+                else:
+                    pass
             else:
-                pass
+                # ealry stop
+                if utils.early_stop(train_accuracies, train_losses, n=early_stop_num):
+                    break
+                else:
+                    pass
             # test
             if (i + 1) % epochs_every_test == 0:
                 sess.run(test_init_op)
