@@ -1,4 +1,4 @@
-# tf-deeplearning-classification
+# deeplearning-classification-with-tensorflow
 基于TensorFlow的经典分类网络的实现——vgg16，resnet系列
 
 ## 使用手册——以resnet为例
