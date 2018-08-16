@@ -3,7 +3,12 @@ Utility functions
 """
 
 
-import os, random, time
+import os
+import random
+import time
+from PIL import ImageDraw
+from PIL import ImageFont
+import numpy as np
 import tensorflow as tf
 
 
@@ -68,6 +73,31 @@ def _parse_function(filename, label, num_classes):
     return image_data, label
 
 
+def process_image(image):
+    image_resize = image.resize((224, 224))
+    image_data = np.array(image_resize)
+    # (x - mean) / adjusted_stddev
+    # adjusted_stddev = max(stddev, 1.0/sqrt(image.NumElements()))
+    mean = np.mean(image_data)
+    stddev = np.std(image_data)
+    min_stddev = 1.0/(image_data.shape[0]*image_data.shape[1]*image_data.shape[2])
+    adjusted_stddev = max(stddev, min_stddev)
+    img_ = (image_data - mean) / adjusted_stddev
+    img_ = img_.reshape([1, 224, 224, 3])
+    return img_
+
+
+def show_result_pic(image, pred_class, pred_prob):
+    # Ubuntu font
+    # font = ImageFont.truetype('LiberationSans-Regular.ttf', 30)
+    # Windows font
+    font = ImageFont.truetype("C:\Windows\Fonts\Verdana.ttf", 30)
+    draw = ImageDraw.Draw(image)
+    draw.text((0, 0), '%s: %f' % (pred_class, pred_prob), (255, 0, 0), font=font)
+    image.show()
+
+
+
 def create_optimizer(opt, learning_rate, momentum):
     """
     Create optimizer operation
@@ -124,8 +154,10 @@ def create_directory(directory):
         pass
 
 
-def early_stop(train_accuracy, train_loss, val_accuracies=None, val_losses=None, n=3):
-    if (train_accuracy == 1.0) and (train_loss == 0.0):
+def early_stop(train_accuracies, train_losses, val_accuracies=None, val_losses=None, n=3):
+    if (len(train_accuracies) >= 3) \
+            and (train_accuracies[-n:] == [1.0]*n) \
+            and (train_losses[-n:] == [0.0]*n):
         return True
     else:
         if (val_accuracies is not None) \
