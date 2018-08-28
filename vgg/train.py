@@ -1,6 +1,6 @@
 import tensorflow as tf
 import vgg16 as vgg16
-import utils
+from tf_keras import utils
 import os
 import math
 
@@ -28,11 +28,11 @@ def main():
     trained_model_directory = 'directory/to/your/restored/model' # Necessary if method is "restore"
     model_directory = 'path/to/save/model'
     utils.create_directory(model_directory)
-    model_name = 'vgg16_%s_keep%03d_%s.ckpt' % (optimizer, keep_prob_*100, utils.record_time())
+    model_name = 'vgg16_%s_keep%03d_%s.ckpt' % (optimizer, keep_prob_ * 100, utils.record_time())
     model_path = os.path.join(model_directory, model_name)
     log_directory = 'directory/to/save/log_files'
     utils.create_directory(log_directory)
-    log_filename = 'vgg16_%s_keep%03d_%s.log' % (optimizer, keep_prob_*100, utils.record_time())
+    log_filename = 'vgg16_%s_keep%03d_%s.log' % (optimizer, keep_prob_ * 100, utils.record_time())
     summarize = True         # True if summarize in tensorboard
 
     # Load data and preprocess it
@@ -106,7 +106,7 @@ def main():
                 train_accuracy = train_acc_ / m
                 train_loss = train_loss_ / m
                 print("%s: epoch %d, train_accuracy = %f, train_loss = %f."
-                              % (utils.print_time(), i, train_accuracy, train_loss), file=fo)
+                      % (utils.print_time(), i, train_accuracy, train_loss), file=fo)
             # test
             if (i + 1) % epochs_every_test == 0:
                 sess.run(test_init_op)
@@ -121,7 +121,8 @@ def main():
                 except tf.errors.OutOfRangeError:
                     test_accuracy = total_correct_count / num_test_sample
                     test_loss = test_loss_ / m
-                    print("%s: epoch %d, test_accuracy = %f, test_loss = %f" % (utils.print_time(), i, test_accuracy, test_loss), file=fo)
+                    print("%s: epoch %d, test_accuracy = %f, test_loss = %f" % (
+                    utils.print_time(), i, test_accuracy, test_loss), file=fo)
             if (i + 1) % epochs_every_save == 0:
                 saver.save(sess, model_path, global_step=step)
         print("Done training -- epoch limited reached")

@@ -97,7 +97,6 @@ def show_result_pic(image, pred_class, pred_prob):
     image.show()
 
 
-
 def create_optimizer(opt, learning_rate, momentum):
     """
     Create optimizer operation
