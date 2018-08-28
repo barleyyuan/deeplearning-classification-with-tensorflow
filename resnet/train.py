@@ -1,6 +1,6 @@
 import tensorflow as tf
 import resnet
-import utils
+from tf_keras import utils
 import os
 import math
 
@@ -121,7 +121,7 @@ def main():
                 train_accuracy = train_acc_ / m
                 train_loss = train_loss_ / m
                 print("%s: epoch %d, train_accuracy = %f, train_loss = %f."
-                              % (utils.print_time(), i, train_accuracy, train_loss), file=fo)
+                      % (utils.print_time(), i, train_accuracy, train_loss), file=fo)
             train_accuracies.append(train_accuracy)
             train_losses.append(train_loss)
             # validation
@@ -138,7 +138,8 @@ def main():
                 except tf.errors.OutOfRangeError:
                     val_accuracy = total_correct_count / num_val_sample
                     val_loss = val_loss_ / m
-                    print("%s:          val_accuracy = %f, val_loss = %f" % (utils.print_time(), val_accuracy, val_loss), file=fo)
+                    print("%s:          val_accuracy = %f, val_loss = %f" % (
+                    utils.print_time(), val_accuracy, val_loss), file=fo)
                 val_accuracies.append(val_accuracy)
                 val_losses.append(val_loss)
                 # early stop
@@ -166,7 +167,8 @@ def main():
                 except tf.errors.OutOfRangeError:
                     test_accuracy = total_correct_count / num_test_sample
                     test_loss = test_loss_ / m
-                    print("%s: epoch %d, test_accuracy = %f, test_loss = %f" % (utils.print_time(), i, test_accuracy, test_loss), file=fo)
+                    print("%s: epoch %d, test_accuracy = %f, test_loss = %f" % (
+                    utils.print_time(), i, test_accuracy, test_loss), file=fo)
             if (i + 1) % epochs_every_save == 0:
                 saver.save(sess, model_path, global_step=step)
         print("Done training -- epoch limited reached")
