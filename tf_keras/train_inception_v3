@@ -1,8 +1,8 @@
 import utils
 import os
-from tensorflow.keras.applications.resnet50 import ResNet50
-from tensorflow.keras.applications.resnet50 import preprocess_input
-from tensorflow.keras.layers import Dense
+from tensorflow.keras.applications.inception_v3 import InceptionV3
+from tensorflow.keras.applications.inception_v3 import preprocess_input
+from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
 from tensorflow.keras.models import Model
 from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateu
 
@@ -29,18 +29,23 @@ test_directory = os.path.join(new_main_path, 'test')
 train, val, test = utils.data_split(main_data_path, new_main_path, test_ratio=0.1, val_ratio=0.1)
 
 # create data train generator
-train_generator = utils.train_data_generator(train_directory, batch_size, preprocess_input, (224, 224))
+train_generator = utils.train_data_generator(train_directory, batch_size, preprocess_input, (299, 299))
 train_image_numbers = train_generator.samples
 # create validation generator
-validation_generator = utils.test_data_generator(validation_directory, preprocess_input, (224, 224))
+validation_generator = utils.test_data_generator(validation_directory, preprocess_input, (299, 299))
 # create test generator
-test_generator = utils.test_data_generator(test_directory, preprocess_input, (224, 224))
+test_generator = utils.test_data_generator(test_directory, preprocess_input, (299, 299))
 
 # create the base pre-trained model
-base_model = ResNet50(weights='imagenet', include_top=False)
+base_model = InceptionV3(weights='imagenet', include_top=False, classes=num_classes)
 
-# add a logistic layer for predictions
-predictions = Dense(num_classes, activation='softmax')(base_model.input)
+# add a global spatial average pooling layer
+x = base_model.output
+x = GlobalAveragePooling2D()(x)
+# let's add a fully-connected layer
+x = Dense(1024, activation='relu')(x)
+# and a logistic layer -- let's say we have 200 classes
+predictions = Dense(200, activation='softmax')(x)
 
 # this the model we will train
 model = Model(inputs=base_model.input, outputs=predictions)
