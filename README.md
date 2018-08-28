@@ -1,6 +1,8 @@
 # deeplearning-classification-with-tensorflow
 基于TensorFlow的经典分类网络的实现——vgg16，resnet系列
 
+### 更新说明：添加了基于tf.keras的迁移学习，在keras官方提供的ImageNet上训练的模型的基础上进行finetune。
+
 ## 使用手册——以resnet为例
 ### 环境依赖
 Ubuntu16.04 + python3.6.6 + tensorflow1.10.0
