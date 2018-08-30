@@ -62,16 +62,32 @@ $ Input image filename: 输入预测图片的路径
 要求数据格式与上述一致，在训练之前，把数据集分割为train, validation, test 三部分
 ###### 修改 data_split.py 参数
 路径        
-main_data_path: 数据集所在路径
-new_main_path: 分割后的新数据集所在路径
-分割比例       
-test_ratio: 测试集所占比例
-val_ratio: 验证集所占比例
-seed: 随机种子
+`main_data_path`: 数据集所在路径
+`new_main_path`: 分割后的新数据集所在路径
+      
+分割参数       
+`test_ratio`: 测试集所占比例
+`val_ratio`: 验证集所占比例
+`seed`: 随机种子
+
 ###### 运行
 ```
 python data_split.py
 ```
 
 ##### 训练
+训练任务为在keras提供的预训练模型的基础上进行finetune，当在区别于imagenet1000类的新类别上构建分类任务时，推荐这种方法；
+注：    
+如果希望参数随机初始化，不需finetune时，修改代码第40行为：
+```
+base_model = ResNet50(weights=None, include_top=False, pooling="avg")
+
+```
+如果希望只训练最后用于分类的全连接层，而不训练预训练模型中的其他参数时，把50-51行的注释'#'删除掉：
+```
+# if train only the top layers, uncomment the following two lines
+for layer in base_model.layers:
+    layer.trainable = False
+```
+###### 修改
 ##### 预测
