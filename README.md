@@ -47,8 +47,10 @@ python resnet/train.py
 ###### 修改resnet/predict.py中的参数
 model_path: ckpt模型所在路径
 ###### 运行
+```
 python predict.py    
 $ Input image filename: 输入预测图片的路径
+```
 
 #### tensorflow.keras版本 —— 以ResNet50 finetune为例
 ##### 数据处理
