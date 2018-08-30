@@ -72,7 +72,7 @@ $ Input image filename: 输入预测图片的路径
 
 ###### 运行
 ```
-python data_split.py
+python tf_keras/data_split.py
 ```
 
 ##### 训练
@@ -89,5 +89,35 @@ base_model = ResNet50(weights=None, include_top=False, pooling="avg")
 for layer in base_model.layers:
     layer.trainable = False
 ```
-###### 修改
+###### 修改 tf_keras/train_resnet50.py 参数
+网络参数
+`num_classes`：类别数；     
+      
+ 训练参数
+ `batch_size`: 就是batch_size；    
+ `epochs`： 最大迭代epochs数；    
+ `validation_steps`：验证集生成器的返回次数，若validation没有设置batch，则validation_steps设为1即可；   
+ `opt`： 优化器，可选值有：'sgd', 'adam', 'rmsprop', 'adagrad', 'adadelta', 'adamax', 'nadam';    
+ `learning_rate`： 学习率；
+ `momentum`： 动量，opt为'sgd'时必选；
+       
+ 路径     
+ `model_path`： 模型保存路径     
+ `data_path`：数据集所在路径       
+ 
+ ###### 运行
+ ```
+ python tf_keras/train_resnet50.py
+ ```
+ 
 ##### 预测
+###### 修改 tf_keras/predict_resnet50.py 参数
+`file_path`： 已训练的h5模型的路径+文件名      
+`class_list`: 与数据集中类别名称顺序相一致的类别名称的列表    
+###### 运行 
+```
+python tf_keras/predict_resnet50.py
+$ Input image filename: 输入预测图片的路径+文件名
+```
+
+
