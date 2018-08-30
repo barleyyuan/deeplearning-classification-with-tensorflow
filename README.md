@@ -23,8 +23,8 @@ dataset-|-class0-|-00001.jpg
 ##### 训练
 ###### 修改train.py中的参数： 
 网络结构参数    
-depth: resnet深度（层数），可选值：18，34（浅层），50，101，152（深层）；   
-num_classes: 类别数，即网络输出层的神经元个数；   
+`depth`: resnet深度（层数），可选值：18，34（浅层），50，101，152（深层）；   
+`num_classes`: 类别数，即网络输出层的神经元个数；   
 训练参数      
 optimizer：优化器，可选值：'sgd', 'adam', 'momentum'（还可选用其他优化器，在utils.create_optimizer()函数中添加）；    
 learning_rate, momentum, batch_size: 各种训练参数；  
@@ -41,7 +41,9 @@ log_directory: 日志文件和tensorboard文件保存路径，日志中保存了
 log_filename: 日志文件保存名称；   
 summarize: 是否利用tensorboard记录训练结果的布尔值，可选值：True或False
 ###### 运行
+```
 python resnet/train.py
+```
 
 ##### 预测
 ###### 修改resnet/predict.py中的参数
@@ -64,7 +66,9 @@ test_ratio: 测试集所占比例
 val_ratio: 验证集所占比例
 seed: 随机种子
 ###### 运行
-`python data_split.py`
+```
+python data_split.py
+```
 
 ##### 训练
 ##### 预测
