@@ -22,10 +22,10 @@ dataset-|-class0-|-00001.jpg
 #### Tensorflow版本 —— 以ResNet为例
 ##### 训练
 ###### 修改train.py中的参数： 
-####### 网络结构参数
+网络结构参数    
 depth: resnet深度（层数），可选值：18，34（浅层），50，101，152（深层）；   
 num_classes: 类别数，即网络输出层的神经元个数；   
-####### 训练参数
+训练参数      
 optimizer：优化器，可选值：'sgd', 'adam', 'momentum'（还可选用其他优化器，在utils.create_optimizer()函数中添加）；    
 learning_rate, momentum, batch_size: 各种训练参数；  
 epochs：最大迭代次数；   
@@ -33,7 +33,7 @@ epochs_every_test: 每epochs_every_test个epochs测试一次；
 epochs_every_save: 每epochs_every_save个epochs保存一次模型；
 early_stop_num: 连续early_stop_num个epochs的train_accuracy==1.0且train_loss==0.0，或连续early_stop_num个epochs的val_accuracy和val_loss均没有提升时，提前结束训练（由于我参与的项目的数据较少，故没有设置验证集，之后会来填坑）；    
 method: 训练方式，可选值：'restart'（从头开始）, 'restore'（继续训练）；   
-####### 各种路径
+各种路径      
 trained_model_directory: 已训练模型目录，当训练方式为'restore'时必选；   
 model_directory: 模型保存路径；  
 model_name: 模型保存名称；   
@@ -54,10 +54,10 @@ $ Input image filename: 输入预测图片的路径
 ##### 数据处理
 要求数据格式与上述一致，在训练之前，把数据集分割为train, validation, test 三部分
 ###### 修改 data_split.py 参数
-####### 路径
+路径        
 main_data_path: 数据集所在路径
 new_main_path: 分割后的新数据集所在路径
-####### 分割比例
+分割比例       
 test_ratio: 测试集所占比例
 val_ratio: 验证集所占比例
 seed: 随机种子
