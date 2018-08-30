@@ -4,7 +4,7 @@ from tensorflow.keras.applications.resnet50 import preprocess_input, decode_pred
 import numpy as np
 import time
 from PIL import Image
-from tf_keras import utils
+import utils
 
 
 def predict(model):

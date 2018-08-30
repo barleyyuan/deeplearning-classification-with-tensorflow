@@ -4,29 +4,27 @@ from tensorflow.keras.applications.inception_v3 import InceptionV3
 from tensorflow.keras.applications.inception_v3 import preprocess_input
 from tensorflow.keras.layers import Dense, GlobalAveragePooling2D
 from tensorflow.keras.models import Model
-from tensorflow.keras.callbacks import ModelCheckpoint, EarlyStopping, ReduceLROnPlateu
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
 
 
 # Hyper-parameters
-num_classes = 2
+num_classes = 3
 batch_size = 32
-epochs = 500
-validation_steps = 500
+epochs = 200
+validation_steps = 10
 # training parameters
 opt = 'sgd'
 learning_rate = 1e-04
 momentum = 0.0 # necessary if opt is 'sgd'
 # model path
-model_path = ""
+model_path = "/home/deeplearning/Projects/Muck/models"
+model_filepath = os.path.join(model_path, "inception_v3_model.h5")
 
 # split data
-main_data_path = ""
-model_filepath = ""
-new_main_path = ""
-train_directory = os.path.join(new_main_path, 'train')
-validation_directory = os.path.join(new_main_path, 'validation')
-test_directory = os.path.join(new_main_path, 'test')
-train, val, test = utils.data_split(main_data_path, new_main_path, test_ratio=0.1, val_ratio=0.1)
+data_path = "/home/deeplearning/Projects/Muck/data/keras_data/"
+train_directory = os.path.join(data_path, 'train')
+validation_directory = os.path.join(data_path, 'validation')
+test_directory = os.path.join(data_path, 'test')
 
 # create data train generator
 train_generator = utils.train_data_generator(train_directory, batch_size, preprocess_input, (299, 299))
@@ -37,7 +35,7 @@ validation_generator = utils.test_data_generator(validation_directory, preproces
 test_generator = utils.test_data_generator(test_directory, preprocess_input, (299, 299))
 
 # create the base pre-trained model
-base_model = InceptionV3(weights='imagenet', include_top=False, classes=num_classes)
+base_model = InceptionV3(weights='imagenet', include_top=False)
 
 # add a global spatial average pooling layer
 x = base_model.output
@@ -45,7 +43,7 @@ x = GlobalAveragePooling2D()(x)
 # let's add a fully-connected layer
 x = Dense(1024, activation='relu')(x)
 # and a logistic layer -- let's say we have 200 classes
-predictions = Dense(200, activation='softmax')(x)
+predictions = Dense(num_classes, activation='softmax')(x)
 
 # this the model we will train
 model = Model(inputs=base_model.input, outputs=predictions)
@@ -65,30 +63,28 @@ model.compile(optimizer=optimizer,
 
 # train the model
 # define callback function
-model_ckpt = ModelCheckpoint(os.path.join(model_path,'weights.{epoch:02d-{val_loss:.2f}}.hdf5'),
-                             monitor='val_loss',
-                             save_best_only = True,
-                             )
 early_stopping = EarlyStopping(monitor='val_loss',
                                patience=10,
                                )
-reduce_lr = ReduceLROnPlateu(monitor='val_loss',
-                             factor=0.1,
-                             patience=5,
-                             )
+reduce_lr = ReduceLROnPlateau(monitor='val_loss',
+                              factor=0.1,
+                              patience=5,
+                              )
 
 model.fit_generator(train_generator,
-                    steps_per_epoch=train_generator//epochs,
+                    steps_per_epoch=train_image_numbers//batch_size,
                     epochs=epochs,
                     validation_data=validation_generator,
                     validation_steps=validation_steps,
-                    callbacks=[model_ckpt, early_stopping, reduce_lr]
+                    callbacks=[early_stopping, reduce_lr]
                     )
 
 # test the model
-model.evaluate_generator(test_generator,
+test_metrics = model.evaluate_generator(test_generator,
                          steps=1,
                          )
+for i in zip(model.metrics_names, test_metrics):
+    print(i)
 
 # save the model
 model.save(model_filepath)
